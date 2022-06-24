@@ -12,7 +12,7 @@ class MySqlInterface:
 
     def connect_server(self):
         self.myserv = mysql.connector.connect(
-            host=self.,
+            host=self.host,
             user=self.user,
             password=self.password)
         return self.myserv
@@ -27,7 +27,7 @@ class MySqlInterface:
 
     def create_database(self, database_name):
         try:
-            mycursor = self.mydb.cursor()
+            mycursor = self.myserv.cursor()
             sql = "CREATE DATABASE " + database_name
             mycursor.execute(sql)
         except mysql.connector.Error as error:
@@ -38,10 +38,7 @@ class MySqlInterface:
             str_create_table = "CREATE TABLE " + tab_name + " ("
             string = ""
             for field in list(db_dict.keys()):
-                string += field
-                for keyword in db_dict[field]:
-                    string += " " + keyword
-                string += ", "
+                string += field + " " + db_dict[field] + ", "
             string = string[:-2]
             string = string + ")"
             mycursor = self.mydb.cursor()
@@ -50,7 +47,7 @@ class MySqlInterface:
             print("Failed to create table {}".format(error))
 
 
-    def table_insert(self, table_name, data_dict, data_type):
+    def table_insert(self, table_name, data_dict):
         try:
             init_string = "INSERT INTO " + table_name + " ("
             feature_string = ""
@@ -82,16 +79,17 @@ class MySqlInterface:
     def delete_table(self, table_name):
         try:
             mycursor = self.mydb.cursor()
-            sql = "DROP TABLE IF EXISTS " + table_name
+            sql = "DROP TABLE " + table_name
             mycursor.execute(sql)
         except mysql.connector.Error as error:
             print("Failed to drop table {}".format(error))
 
     def show_databases(self):
-        mycursor = self.mydb.cursor()
+        mycursor = self.myserv.cursor()
         mycursor.execute("SHOW DATABASES")
         for x in mycursor:
             print(x)
+
 
     def show_tables(self):
         try:
@@ -109,5 +107,42 @@ class MySqlInterface:
             print([column[0] for column in cursor.fetchall()])
         except mysql.connector.Error as error:
             print("Could not show columns {}".format(error))
+
+    def get_databases(self):
+        try:
+            mycursor = self.myserv.cursor()
+            mycursor.execute("SHOW DATABASES")
+            databases = []
+            for x in mycursor:
+                databases.append(x[0])
+            return databases
+        except mysql.connector.Error as error:
+            print("Could not get databases {}".format(error))
+
+    def get_tables(self):
+        try:
+            cursor = self.mydb.cursor()
+            cursor.execute("SHOW TABLES")
+            table_names = []
+            for table_name in cursor:
+                table_names.append(table_name[0])
+            return table_names
+        except mysql.connector.Error as error:
+            print("Could not get tables {}".format(error))
+
+    def get_columns(self, table_name):
+        try:
+            cursor = self.mydb.cursor()
+            cursor.execute("SHOW columns FROM " + table_name)
+            return ([column[0] for column in cursor.fetchall()])
+        except mysql.connector.Error as error:
+            print("Could not get columns {}".format(error))
+
+
+
+
+
+
+
 
 

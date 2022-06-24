@@ -48,6 +48,7 @@ pipeline = pipeline()
 pipeline.forecast_horizon = 10
 pipeline.fit_transform()
 #pipeline = train_all_models(pipeline, 30, 10)
-#evaluate_models("Graph", pipeline)
-get_accuracy(pipeline)
+#get_accuracy(pipeline)
+evaluate_models("Graph", pipeline)
+
 

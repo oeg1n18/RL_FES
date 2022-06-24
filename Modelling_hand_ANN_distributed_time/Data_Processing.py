@@ -58,7 +58,6 @@ class pipeline:
                 Y_A_timedist[data_point, time, :] = Y_A[data_point, time:time + window_size]
                 Y_B_timedist[data_point, time, :] = Y_B[data_point, time:time + window_size]
                 Y_C_timedist[data_point, time, :] = Y_C[data_point, time:time + window_size]
-        print(Y_A_timedist[10][238:, :])
 
         X = np.delete(X, np.arange(X_shape[1] - (window_size+1), X_shape[1]), 1)
         return X, [Y_A_timedist, Y_B_timedist, Y_C_timedist]

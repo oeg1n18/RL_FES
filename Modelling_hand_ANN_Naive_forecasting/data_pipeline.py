@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 class pipeline:
     def __init__(self):
         self.forecast_horizon = 10
@@ -35,8 +36,8 @@ class pipeline:
             else:
                 n_output_elements = n_output_elements * dim
 
-        n_input_samples = n_input_elements/(7*251)
-        n_output_samples = n_output_elements/(3*251)
+        n_input_samples = n_input_elements / (7 * 251)
+        n_output_samples = n_output_elements / (3 * 251)
         input = np.reshape(input, (int(n_input_samples), 7, 251))
         output = np.reshape(output, (int(n_output_samples), 3, 251))
         return input, output
@@ -59,7 +60,6 @@ class pipeline:
         self.Y_valid = self.Y_valid_full[:, -self.forecast_horizon:, :]
         self.Y_test = self.Y_test_full[:, -self.forecast_horizon:, :]
         return self.X_train, self.Y_train, self.X_valid, self.Y_valid, self.X_test, self.Y_test
-
 
     def scale_data(self, X, Y):
         Y = np.nan_to_num(Y, nan=0.0)
@@ -86,18 +86,17 @@ class pipeline:
                 Y_scaled[:, n, :] = Y[:, n, :]
         return X_scaled, Y_scaled, (X_maxes, X_mins), (Y_maxes, Y_mins)
 
-
     def fit_transform(self):
-        self.X_train_full, self.Y_train_full, self.X_metrics, self.Y_metrics = self.scale_data(self.raw_input, self.raw_output)
-        self.X_train, self.Y_train, self.X_valid, self.Y_valid, self.X_test, self.Y_test = self.preprocess(self.X_train_full, self.Y_train_full)
+        self.X_train_full, self.Y_train_full, self.X_metrics, self.Y_metrics = self.scale_data(self.raw_input,
+                                                                                               self.raw_output)
+        self.X_train, self.Y_train, self.X_valid, self.Y_valid, self.X_test, self.Y_test = self.preprocess(
+            self.X_train_full, self.Y_train_full)
         return [(self.X_train, self.Y_train),
                 (self.X_valid, self.Y_valid), (self.X_test, self.Y_test)]
-
 
     def unscale_data(self, Y):
         Y_unscaled = np.empty(Y.shape)
         for n in np.arange(Y.shape[2]):
-            Y_unscaled[n] = ((Y[:, :, n] + 1)/2)*(self.Y_train_metrics[0][n] - self.Y_train_metrics[1][n]) + self.Y_train_metrics[1][n]
+            Y_unscaled[n] = ((Y[:, :, n] + 1) / 2) * (self.Y_train_metrics[0][n] - self.Y_train_metrics[1][n]) + \
+                            self.Y_train_metrics[1][n]
         return Y_unscaled
-
-

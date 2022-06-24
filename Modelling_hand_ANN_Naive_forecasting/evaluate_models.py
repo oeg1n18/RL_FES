@@ -48,7 +48,7 @@ def plot_training_loss(train_losses):
 
 
 def plot_prediction(models, pipeline):
-    sample = 39
+    sample = 60
     X_test, Y_test = pipeline.X_test, pipeline.Y_test
 
     Y_predictions = []
