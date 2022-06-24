@@ -36,18 +36,18 @@ class pipeline:
         train_index = np.arange(np.ceil(0.8 * N)).astype('int')
         valid_index = np.arange(np.ceil(0.8 * N), np.ceil(0.92 * N)).astype('int')
         test_index = np.arange(np.ceil(0.92 * N), N).astype('int')
-        self.X_train = np.swapaxes(input[train_index, :, :], 1, 2)
-        self.Y_train = np.swapaxes(output[train_index, :, :], 1, 2)
-        self.X_valid = np.swapaxes(input[valid_index, :, :], 1, 2)
-        self.Y_valid = np.swapaxes(output[valid_index, :, :], 1, 2)
-        self.X_test = np.swapaxes(input[test_index, :, :], 1, 2)
-        self.Y_test = np.swapaxes(output[test_index, :, :], 1, 2)
-        self.X_train = self.X_train[:, :-self.forecast_horizon, :]
-        self.X_valid = self.X_valid[:, :-self.forecast_horizon, :]
-        self.X_test = self.X_test[:, :-self.forecast_horizon, :]
-        self.Y_train = self.Y_train[:, -self.forecast_horizon:, :]
-        self.Y_valid = self.Y_valid[:, -self.forecast_horizon:, :]
-        self.Y_test = self.Y_test[:, -self.forecast_horizon:, :]
+        self.X_train_full = np.swapaxes(input[train_index, :, :], 1, 2)
+        self.Y_train_full = np.swapaxes(output[train_index, :, :], 1, 2)
+        self.X_valid_full = np.swapaxes(input[valid_index, :, :], 1, 2)
+        self.Y_valid_full = np.swapaxes(output[valid_index, :, :], 1, 2)
+        self.X_test_full = np.swapaxes(input[test_index, :, :], 1, 2)
+        self.Y_test_full = np.swapaxes(output[test_index, :, :], 1, 2)
+        self.X_train = self.X_train_full[:, :-self.forecast_horizon, :]
+        self.X_valid = self.X_valid_full[:, :-self.forecast_horizon, :]
+        self.X_test = self.X_test_full[:, :-self.forecast_horizon, :]
+        self.Y_train = self.Y_train_full[:, -self.forecast_horizon:, :]
+        self.Y_valid = self.Y_valid_full[:, -self.forecast_horizon:, :]
+        self.Y_test = self.Y_test_full[:, -self.forecast_horizon:, :]
         return self.X_train, self.Y_train, self.X_valid, self.Y_valid, self.X_test, self.Y_test
 
 
@@ -95,21 +95,21 @@ class pipeline:
 
 def create_models(pipeline):
     model_ang1 = keras.models.Sequential([
-        keras.layers.LSTM(20, return_sequences=True, input_shape=[None, 7]),
-        keras.layers.LSTM(20, return_sequences=True),
-        keras.layers.Dense(pipeline.forecast_horizon, activation=keras.activations.tanh)
+        keras.layers.SimpleRNN(20, return_sequences=True, input_shape=[None, 7]),
+        keras.layers.SimpleRNN(20),
+        keras.layers.Dense(pipeline.forecast_horizon)
     ])
 
     model_ang2 = keras.models.Sequential([
-        keras.layers.LSTM(20, return_sequences=True, input_shape=[None, 7]),
-        keras.layers.LSTM(20, return_sequences=True),
-        keras.layers.Dense(pipeline.forecast_horizon, activation=keras.activations.tanh)
+        keras.layers.SimpleRNN(20, return_sequences=True, input_shape=[None, 7]),
+        keras.layers.SimpleRNN(20),
+        keras.layers.Dense(pipeline.forecast_horizon)
     ])
 
     model_ang3 = keras.models.Sequential([
-        keras.layers.LSTM(20, return_sequences=True, input_shape=[None, 7]),
-        keras.layers.LSTM(20, return_sequences=True),
-        keras.layers.Dense(pipeline.forecast_horizon, activation=keras.activations.tanh)
+        keras.layers.SimpleRNN(20, return_sequences=True, input_shape=[None, 7]),
+        keras.layers.SimpleRNN(20),
+        keras.layers.Dense(pipeline.forecast_horizon)
     ])
     return [model_ang1, model_ang2, model_ang3]
 
@@ -128,7 +128,7 @@ def train_models(models, X_train, Y_train, X_valid, Y_valid, epochs):
     print("Hi")
     history = []
     for i, model in enumerate(models):
-        history.append(model.fit(X_train, Y_train[:, np.newaxis, :, i], epochs=epochs, validation_data=(X_valid, Y_valid[:, np.newaxis, :, i])))
+        history.append(model.fit(X_train, Y_train[:, :, i], epochs=epochs, validation_data=(X_valid, Y_valid[:, :, i])))
     return history, models
 
 

@@ -3,7 +3,56 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="/Modelling_hand_ANN_Naive_forecasting/Datasets/combinations_set/inputs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/Modelling_hand_ANN_undistributed_time/Datasets/combinations_set/inputs.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model0_train.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model0_validation.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model1_train.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model1_validation.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model2_train.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model2_validation.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

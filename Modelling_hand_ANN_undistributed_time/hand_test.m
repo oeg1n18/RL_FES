@@ -54,21 +54,7 @@ l1 = 0.05; l2 = 0.02; l3 = 0.02;
 
     %% to test the model, let's apply a ramp to some of the 7 muscles
     %% values umax > 0.2 make the outputs go extremely large as we are applying a ramp and we only have a simple stiffness form
-    if Tset == 0
-        Tmax = 0.4;
-    elseif Tset == 1
-        Tmax = 0.6;
-    elseif Tset == 2
-        Tmax = 0.8;
-    elseif Tset == 3
-        Tmax = 1.0;
-    elseif Tset == 4
-        Tmax = 1.2;
-    elseif Tset == 5
-        Tmax = 1.4;
-    elseif Tset == 6
-        Tmax = 1.6;
-    end
+    Tmax =
         
     
     if amplitude1 == 0

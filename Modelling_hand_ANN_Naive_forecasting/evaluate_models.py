@@ -1,24 +1,14 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from tensorflow import keras
-import pandas as pd
-from Data_Processing import *
-
-def last_time_step_mse(Y_true, Y_pred):
-    return keras.metrics.mean_squared_error(Y_true[:, -1], Y_pred[:, -1])
-
-
-def get_config(self):
-    base_config = super().get_config()
-    return {**base_config, "num_classes": self.num_classes}
 
 
 def load_models(root="Models/", pretrained_models=("model_ang0.h5", "model_ang1.h5", "model_ang2.h5")):
     trained_models = []
     for i, model_name in enumerate(pretrained_models):
         model_path = root + model_name
-        trained_models.append(
-            keras.models.load_model(model_path, custom_objects={'last_time_step_mse': last_time_step_mse}))
+        trained_models.append(keras.models.load_model(model_path))
     return trained_models
 
 
@@ -57,57 +47,50 @@ def plot_training_loss(train_losses):
     plt.show()
 
 
-
-
 def plot_prediction(models, pipeline):
-    sample = 1
-    #input, output = pipeline.raw_input, pipeline.raw_output
-    #_, _, _, _, X_test, Y_test = pipeline.preprocess(pipeline.raw_input, pipeline.raw_output)
-    #X_test, Y_test = pipeline.preprocess_forecast(X_test, Y_test, pipeline.forecast_horizon)
+    sample = 39
     X_test, Y_test = pipeline.X_test, pipeline.Y_test
 
     Y_predictions = []
     for i in np.arange(Y_test.shape[2]):
         Y_predictions.append(models[i](X_test))
-    print("Hi")
-    print(Y_predictions[0].shape)
 
     Y_pred = []
     Y_true = []
     for feature in np.arange(3):
         Y_true.append(Y_test[sample, :, feature])
-        Y_pred.append(Y_predictions[i][sample, :])
+        Y_pred.append(Y_predictions[feature][sample, :])
 
 
     time = np.arange(251) * 0.02
     fig = plt.figure()
 
-    print("HI")
     print(pipeline.Y_test_full[sample, :-pipeline.forecast_horizon, 0].shape)
     print(Y_true[0].shape)
     print(Y_pred[0].shape)
 
     fig.add_subplot(131)
     plt.plot(time[:-pipeline.forecast_horizon], pipeline.Y_test_full[sample, :-pipeline.forecast_horizon, 0], label="True")
-    plt.plot(time[-pipeline.forecast_horizon:], Y_true[0], label="True_ang1")
-    plt.plot(time[-pipeline.forecast_horizon:], Y_pred[0], label="Pred_ang1")
+    #plt.plot(time[-pipeline.forecast_horizon:], Y_true[0],marker="o", markersize=10, markeredgecolor="green",label="True_ang1")
+    plt.plot(time[-pipeline.forecast_horizon:], Y_pred[0],marker="o", markersize=10, markeredgecolor="red", label="Pred_ang1")
     plt.title("Angle1")
+    plt.ylim(0, 1)
     plt.legend()
 
     fig.add_subplot(132)
     plt.plot(time[:-pipeline.forecast_horizon], pipeline.Y_test_full[sample, :-pipeline.forecast_horizon, 1], label="True")
-    plt.plot(time[-pipeline.forecast_horizon:], Y_true[1], label="True_ang2")
-    plt.plot(time[-pipeline.forecast_horizon:], Y_pred[1], label="Pred_ang2")
+    #plt.plot(time[-pipeline.forecast_horizon:], Y_true[1],marker="o", markersize=10, markeredgecolor="green",label="True_ang2")
+    plt.plot(time[-pipeline.forecast_horizon:], Y_pred[1],marker="o", markersize=10, markeredgecolor="red", label="Pred_ang2")
     plt.title("Angle2")
+    plt.ylim(0, 1)
     plt.legend()
 
     fig.add_subplot(133)
     plt.plot(time[:-pipeline.forecast_horizon], pipeline.Y_test_full[sample, :-pipeline.forecast_horizon, 2], label="True")
-    plt.plot(time[-pipeline.forecast_horizon:], Y_true[2], label="True_ang3")
-    plt.plot(time[-pipeline.forecast_horizon:], Y_pred[2], label="Pred_ang3")
+    plt.plot(time[-pipeline.forecast_horizon:], Y_true[2],marker="o", markersize=10, markeredgecolor="green",label="True_ang3")
+    plt.plot(time[-pipeline.forecast_horizon:], Y_pred[2],marker="o", markersize=10, markeredgecolor="red", label="Pred_ang3")
     plt.title("Angle3")
+    plt.ylim(0, 1)
     plt.legend()
 
     plt.show()
-
-
