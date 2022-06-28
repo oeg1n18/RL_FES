@@ -10,49 +10,14 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/Modelling_hand_ANN_undistributed_time/Datasets/combinations_set/inputs.csv">
+        <entry key="/Modelling_hand_ANN_distributed_time/Datasets/combinations_set/target_trajectory.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
             </Attribute>
           </value>
         </entry>
-        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model0_train.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model0_validation.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model1_train.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model1_validation.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model2_train.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="/Modelling_hand_ANN_undistributed_time/training_loss/loss_model2_validation.csv">
+        <entry key="/Reinforcement_Learning/PolicyGradients/trajectory_target.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

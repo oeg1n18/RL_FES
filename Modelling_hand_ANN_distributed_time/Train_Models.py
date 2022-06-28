@@ -1,37 +1,48 @@
 import numpy as np
-import pandas as pd
 from tensorflow import keras
-from Data_Processing import *
-from training import *
+import pandas as pd
+from data_pipeline import *
+from Training import *
+from evaluate_models import *
 
-# build the pipeline
+
+def train_all_models(pipeline, epochs, new_model=False):
+    pipeline.fit_transform()
+    if new_model:
+        model = create_model()
+    else:
+        model = load_model()
+    print(model.summary())
+    model.compile(loss="mse", optimizer="adam")
+    history, models = train_models(model, pipeline, epochs)
+    save_training(model, history)
+    return pipeline
+
+
+def evaluate_models(type, pipeline):
+    if type == "Loss":
+        train_losses = load_training_loss()
+        plot_training_loss(train_losses)
+    elif type == "Graph":
+        models = load_model()
+        plot_prediction(models, pipeline)
+    else:
+        print("Please choose Loss or Graph for type")
+
+
+def get_accuracy(pipeline):
+    model = load_model()
+    X_test, Y_test = pipeline.X_test, pipeline.Y_test
+    preds = model(X_test)
+    error = np.abs(Y_test - preds)
+    return 1 - np.mean(error)
+
+
+
+
 pipeline = pipeline()
-
-# Process the data through the pipeline
 pipeline.fit_transform()
-
-# Create the models
-#models = create_models(pipeline)
-
-# Compile the models
-#models = compile_models(models, last_time_step_mse)
-
-# Train the models
-
-
-
-#history, trained_models = train_models(models, pipeline.X_train, pipeline.Y_train,
-                                      # pipeline.X_valid, pipeline.Y_valid, 5)
-
-# Save the Models and training data
-#save_training(models, history)
-
-
-#models = load_models()
-#training_loss = load_training_loss()
-#plot_training_loss(training_loss)
-#plot_prediction(models, pipeline)
-
-
+#train_all_models(pipeline, 30)
+evaluate_models("Graph", pipeline)
 
 

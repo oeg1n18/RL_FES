@@ -64,8 +64,8 @@ l1 = 0.05; l2 = 0.02; l3 = 0.02;
      %% STIMULATE EC MUSCLE
 
     % Define initial control input
-    s = size(0:(Ts/Tmax):1);
-    ramp = [0:(Ts/Tmax):1 ones(1,N - s(2))]';
+    s = size(0:(Ts/Tmax):1) + size(0:Ts:0.5);
+    ramp = [zeros(size(0:Ts:0.5)) 0:(Ts/Tmax):1.0 ones(1,N - s(2))]';
     %% construct input for all 7 muscles
 
     u = zeros(N,7);
@@ -82,10 +82,15 @@ l1 = 0.05; l2 = 0.02; l3 = 0.02;
         u(:,channel1) = umax1*ramp;
         u(:, channel2) = umax2*ramp;
     end
+    
 
         
     sim('finger_mus2_20042021',[],options);
     yout = q.signals.values;
+    yout(1, :) = yout(1,:) - q1init;
+    yout(2, :) = yout(2,:) - q2init;
+    yout(3, :) = yout(3,:) - q3init;
+    
 
     %% record steady-state output
     input = transpose(u);
