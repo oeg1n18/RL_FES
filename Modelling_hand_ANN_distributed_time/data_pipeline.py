@@ -75,24 +75,20 @@ class pipeline:
         X_scaled = np.empty(X.shape)
         Y_scaled = np.empty(Y.shape)
         X_maxes = []
-        X_mins = []
         Y_maxes = []
-        Y_mins = []
         for n in np.arange(X.shape[1]):
-            X_maxes.append(np.max(X[:, n, :]))
-            X_mins.append(np.min(X[:, n, :]))
+            X_maxes.append(np.max(np.abs(X[:, n, :])))
             if X_maxes[n] != 0:
-                X_scaled[:, n, :] = ((X[:, n, :] - X_mins[n]) / (X_maxes[n] - X_mins[n]))
+                X_scaled[:, n, :] = X[:, n, :] / X_maxes[n]
             else:
                 X_scaled[:, n, :] = X[:, n, :]
         for n in np.arange(Y.shape[1]):
-            Y_maxes.append(np.max(Y[:, n, :]))
-            Y_mins.append(np.min(Y[:, n, :]))
+            Y_maxes.append(np.max(np.abs(Y[:, n, :])))
             if Y_maxes[n] != 0:
-                Y_scaled[:, n, :] = ((Y[:, n, :] - Y_mins[n]) / (Y_maxes[n] - Y_mins[n]))
+                Y_scaled[:, n, :] = Y[:, n, :] / Y_maxes[n]
             else:
                 Y_scaled[:, n, :] = Y[:, n, :]
-        return X_scaled, Y_scaled, (X_maxes, X_mins), (Y_maxes, Y_mins)
+        return X_scaled, Y_scaled, X_maxes, Y_maxes
 
     def fit_transform(self):
         self.X_train_full, self.Y_train_full, self.X_metrics, self.Y_metrics = self.scale_data(self.raw_input,
@@ -105,8 +101,7 @@ class pipeline:
     def unscale_data(self, Y):
         Y_unscaled = np.empty(Y.shape)
         for n in np.arange(Y.shape[2]):
-            Y_unscaled[n] = ((Y[:, :, n] + 1) / 2) * (self.Y_train_metrics[0][n] - self.Y_train_metrics[1][n]) + \
-                            self.Y_train_metrics[1][n]
+            Y_unscaled[n] = Y[:, :, n]  * self.Y_train_metrics
         return Y_unscaled
 
 

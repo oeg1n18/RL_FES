@@ -12,7 +12,7 @@ class HandModel:
     def infer(self, data):
         output = self.model(data)
         output = output.numpy()
-        return output[0, 0]
+        return output
 
     def reset_model(self):
         self.model = self.pretrained_model

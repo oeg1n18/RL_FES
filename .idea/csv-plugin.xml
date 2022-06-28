@@ -10,13 +10,6 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="/Modelling_hand_ANN_distributed_time/Datasets/combinations_set/target_trajectory.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="/Reinforcement_Learning/PolicyGradients/trajectory_target.csv">
           <value>
             <Attribute>
