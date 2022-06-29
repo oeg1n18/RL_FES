@@ -1,5 +1,7 @@
 from environment import hand_env
 from DQN import DQN
+import matplotlib.pyplot as plt
+import tensorflow as tf
 
 RL_agent = DQN()
 env = hand_env()
@@ -7,7 +9,7 @@ rewards = []
 experience_replay_frequency = 10
 RL_agent.max_episodes = 100
 
-print
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
 
 while RL_agent.episode < RL_agent.max_episodes:
 
@@ -21,3 +23,6 @@ while RL_agent.episode < RL_agent.max_episodes:
         print("Optimizing")
         RL_agent.experience_replay()
 
+
+plt.plot(rewards)
+plt.show()
