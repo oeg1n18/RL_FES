@@ -40,8 +40,3 @@ def get_accuracy(pipeline):
 
 
 
-pipeline = pipeline()
-pipeline.fit_transform()
-
-
-

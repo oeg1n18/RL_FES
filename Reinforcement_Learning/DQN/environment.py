@@ -22,10 +22,10 @@ class hand_env(HandModel):
                                self.amp1,
                                self.amp2,
                                self.channel1,
-                               self.channel2])
+                               self.channel2]).astype(np.float32)
 
     def take_action(self, A):
-        old_state = self.state
+        old_state = np.reshape(self.state, (1, 5)).astype(np.float32)
         perms = list(itertools.permutations(np.arange(8.0), 2))
         n_AC = len(perms)
 
@@ -79,13 +79,14 @@ class hand_env(HandModel):
 
         # Compute Reward
         self.reward = -np.sum(np.abs(angles[0, 250, :] - self.target_trajectory[250, :]))
+        self.reward = np.float32(self.reward)
 
         # Compute next state
-        self.state = np.array([self.stop_time,
+        self.state = np.reshape(np.array([self.stop_time,
                                self.amp1,
                                self.amp2,
                                self.channel1,
-                               self.channel2])
+                               self.channel2]), (1, 5)).astype(np.float32)
         # Compute Done
         return old_state, A, self.reward, self.state
 
