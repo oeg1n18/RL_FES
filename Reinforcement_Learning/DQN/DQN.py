@@ -65,9 +65,6 @@ class DQN():
             Q_pred = self.model(state)
             Q_preds[i] = Q_pred[action]
             Q_targets[i] = (reward - self.discount_factor * np.max(self.model(nstate)))
-        model.fit()
-
-            los
 
 
 

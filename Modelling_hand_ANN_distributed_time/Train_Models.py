@@ -42,7 +42,6 @@ def get_accuracy(pipeline):
 
 pipeline = pipeline()
 pipeline.fit_transform()
-train_all_models(pipeline, 10)
-evaluate_models("Loss", pipeline)
+
 
 
