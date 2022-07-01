@@ -12,6 +12,7 @@ MODEL_NAME = "inverse_model.h5"
 forward_model = forward_model()
 inverse_model = inverse_model()
 
+
 def generate_ramp(N_input):
     input = np.zeros((N_input, 250, 7))
     ramp_metrics = np.zeros((N_input, 17))
@@ -40,8 +41,34 @@ def generate_ramp(N_input):
             input[batch, ramp.size + 25:, channel2] = amp2
             ohe_channel1[channel1] = 1.0
             ohe_channel2[channel2] = 1.0
-        ramp_metrics[batch, :] = np.hstack((np.array([(50 + ramp.size * 0.02), amp1, amp2]), ohe_channel1, ohe_channel2))
+        ramp_metrics[batch, :] = np.hstack(
+            (np.array([(50 + ramp.size * 0.02), amp1, amp2]), ohe_channel1, ohe_channel2))
     return input, ramp_metrics
+
+
+def generate_ramp_from_inputs(ramp_metrics):
+    inputs = np.zeros((ramp_metrics.shape[0], 250, 7))
+    for input_i in np.arange(ramp_metrics.shape[0]):
+        ramp_metric = ramp_metrics[int(input_i), :]
+        stop_time = ramp_metric[0]
+        amp1 = ramp_metrics[1]
+        amp2 = ramp_metrics[2]
+        channel1 = np.argmax(ramp_metrics[3:10])
+        channel2 = np.argmax(ramp_metrics[11:])
+        width = int(stop_time/0.02 - 25)
+        ramp = np.linspace(0, 1, width)
+        if channel1 < 7 and channel2 == 7:
+            inputs[int(input_i), 25:25 + ramp.size, channel1] = ramp * amp1
+            inputs[int(input_i), ramp.size + 25:, channel1] = amp1
+        elif channel2 < 7 and channel1 == 7:
+            inputs[int(input_i), 25:25 + ramp.size, channel2] = ramp * amp2
+            inputs[int(input_i), ramp.size + 25:, channel2] = amp2
+        elif channel1 < 7 and channel2 < 7:
+            inputs[int(input_i), 25:25 + ramp.size, channel1] = ramp * amp1
+            inputs[int(input_i), 25:25 + ramp.size, channel2] = ramp * amp2
+            inputs[int(input_i), ramp.size + 25:, channel1] = amp1
+            inputs[int(input_i), ramp.size + 25:, channel2] = amp2
+    return inputs
 
 
 if TRAIN_MODEL:
