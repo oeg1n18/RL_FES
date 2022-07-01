@@ -66,9 +66,6 @@ class DQN():
             reward = memory[2]
             nstate = memory[3]
             Q_targets[i, action] = np.float32(reward - self.discount_factor * np.max(self.model(nstate)))
-
-        print(state_inputs.shape)
-        print(Q_targets.shape)
         history = self.model.fit(state_inputs, Q_targets)
         self.losses.append(history.history["loss"])
 

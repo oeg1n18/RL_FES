@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/Reinforcement_Learning/DQN/trajectory_target.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="/Reinforcement_Learning/PolicyGradients/trajectory_target.csv">
           <value>
             <Attribute>

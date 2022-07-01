@@ -1,7 +1,7 @@
-import numpy as np
+
 from tensorflow import keras
 
-class HandModel:
+class forward_model:
     def __init__(self):
         self.model_path = "Models/model_cp.h5"
         self.pretrained_model = keras.models.load_model(self.model_path)
@@ -18,5 +18,3 @@ class HandModel:
             return 1
         else:
             return 0
-
-mod = HandModel()
