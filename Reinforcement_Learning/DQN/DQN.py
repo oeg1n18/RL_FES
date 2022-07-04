@@ -12,9 +12,9 @@ class DQN():
         self.n_states = 5
         self.model = keras.models.Sequential([
                     keras.layers.InputLayer(input_shape=[self.n_states]),
-                    keras.layers.Dense(35),
-                    keras.layers.Dense(50),
-                    keras.layers.Dense(self.n_actions)])
+                    keras.layers.Dense(35, activation="relu"),
+                    keras.layers.Dense(50, activation="relu"),
+                    keras.layers.Dense(self.n_actions, activation="relu")])
         self.model.compile(loss="mse", optimizer="adam")
         self.experience_buffer = {}
         self.n_experiences = 0

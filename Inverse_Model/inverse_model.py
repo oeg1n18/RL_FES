@@ -7,7 +7,7 @@ class inverse_model:
                     keras.layers.InputLayer(input_shape=[None, 3]),
                     keras.layers.LSTM(35, return_sequences=True),
                     keras.layers.LSTM(35),
-                    keras.layers.Dense(17)])
+                    keras.layers.Dense(17, activation="relu")])
         self.model.compile(loss="mse", optimizer="adam")
         self.losses = []
 
@@ -17,7 +17,7 @@ class inverse_model:
         return output
 
     def fit(self, x, y, callbacks):
-        history = self.model.fit(x, y, epochs=1, callbacks=callbacks)
+        history = self.model.fit(x, y, epochs=3, callbacks=callbacks)
         loss = history.history["loss"]
         self.losses.append(loss[-1:])
 

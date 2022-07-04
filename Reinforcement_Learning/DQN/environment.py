@@ -78,7 +78,7 @@ class hand_env(HandModel):
         angles = self.infer(inputs)
 
         # Compute Reward
-        self.reward = -np.sum(np.abs(angles[0, 250, :] - self.target_trajectory[250, :]))
+        self.reward = -np.sum(np.abs(angles[0, :, :] - self.target_trajectory[:, :]))
         self.reward = np.float32(self.reward)
 
         # Compute next state
