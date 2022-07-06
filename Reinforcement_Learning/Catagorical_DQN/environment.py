@@ -105,7 +105,7 @@ class hand_env(tf_agents.environments.py_environment.PyEnvironment, ABC):
         angles = angles.numpy()
         error = np.sum(np.abs(angles[0, :, :] - self.target_trajectory[:, :]))
        # print("error ", error, "  counter", self.counter, " ended ", self._episode_ended)
-        if self._episode_ended or error > 890 or stop_time < 0.04 or chan1 < 0 or chan2 < 0 or chan1 > 7 or chan2 > 7 or amp1 > 0.15 or amp2 > 0.15 or amp1 < 0 or amp2 < 0:
+        if self._episode_ended or error > 890 or stop_time < 0.04 or chan1 < 0 or chan2 < 0 or chan1 > 7 or chan2 > 7 or amp1 > 0.15 or amp2 > 0.15 or amp1 < 0 or amp2 < 0 or self.counter > 20:
             reward = np.float32((1 / error))
             return ts.termination(self._state, reward)
         else:

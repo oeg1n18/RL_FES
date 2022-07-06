@@ -16,7 +16,9 @@ from tf_agents.metrics import tf_metrics
 from tf_agents.policies import policy_saver
 from tf_agents.utils import common
 from tf_agents.replay_buffers import tf_uniform_replay_buffer
+from tf_agents.agents.categorical_dqn import categorical_dqn_agent
 from tf_agents.environments import suite_gym
+from tf_agents.networks import categorical_q_network
 
 
 print("Is configuration built for gpu? : ", tf.config.list_physical_devices('GPU'))
@@ -27,7 +29,7 @@ REPLAY_BUFFER_LENGTH = 10000  # @param {type:"integer"}
 BATCH_SIZE = 3  # @param {type:"integer"}
 LEARNING_RATE = 1e-3  # @param {type:"number"}
 LOG_INTERVAL = 1  # @param {type:"integer"}
-EVAL_INTERVAL = 25  # @param {type:"integer"}
+EVAL_INTERVAL = 10  # @param {type:"integer"}
 
 policy_dir = "policy"
 
@@ -43,20 +45,27 @@ tf_env_train = tf_py_environment.TFPyEnvironment(env_train)
 tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
 
 # Build the Qnetwork for the DQN Agent
-q_net = q_network.QNetwork(
+
+categorical_q_net = categorical_q_network.CategoricalQNetwork(
     tf_env_train.observation_spec(),
     tf_env_train.action_spec(),
+    num_atoms=50,
     fc_layer_params=(100,))
+
 optimizer = tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE )
 train_step_counter = tf.Variable(0)
 
-# Create the DQN agent
-agent = dqn_agent.DqnAgent(
+# Create the CatagoricalDQN agent
+agent = categorical_dqn_agent.CategoricalDqnAgent(
     tf_env_train.time_step_spec(),
     tf_env_train.action_spec(),
-    q_network=q_net,
+    categorical_q_network=categorical_q_net,
     optimizer=optimizer,
+    min_q_value=-20,
+    max_q_value=20,
+    n_step_update=2,
     td_errors_loss_fn=common.element_wise_squared_loss,
+    gamma=0.99,
     train_step_counter=train_step_counter)
 
 # Create replay buffer
@@ -162,14 +171,17 @@ def train_agent(n_iterations):
         if iteration % LOG_INTERVAL == 0:
             log_metrics(train_metrics)
         if iteration % EVAL_INTERVAL == 0:
-           avg_returns.append(compute_avg_return(tf_env_eval, agent.policy, 5))
+           avg_returns.append(compute_avg_return(tf_env_eval, agent.policy, 1))
     return avg_returns
 
-
+print("Hi")
 agent.initialize()
+print("Hi")
 final_time_step, final_policy_state = init_driver.run()  # Collect some initial experiences
+print("Hi2")
 returns = train_agent(NUM_ITERATIONS)  # Run the training loop
 tf_policy_saver.save(policy_dir)
+print("Hi3")
 np.savetxt("returns/avg_returns.txt", returns)
 tf_env_train.close()
 tf_env_eval.close()

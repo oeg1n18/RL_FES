@@ -27,7 +27,7 @@ REPLAY_BUFFER_LENGTH = 10000  # @param {type:"integer"}
 BATCH_SIZE = 3  # @param {type:"integer"}
 LEARNING_RATE = 1e-3  # @param {type:"number"}
 LOG_INTERVAL = 1  # @param {type:"integer"}
-EVAL_INTERVAL = 25  # @param {type:"integer"}
+EVAL_INTERVAL = 10  # @param {type:"integer"}
 
 policy_dir = "policy"
 
@@ -47,6 +47,13 @@ q_net = q_network.QNetwork(
     tf_env_train.observation_spec(),
     tf_env_train.action_spec(),
     fc_layer_params=(100,))
+
+q_net_target = q_network.QNetwork(
+    tf_env_train.observation_spec(),
+    tf_env_train.action_spec(),
+    fc_layer_params=(100,))
+
+
 optimizer = tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE )
 train_step_counter = tf.Variable(0)
 
@@ -57,6 +64,7 @@ agent = dqn_agent.DqnAgent(
     q_network=q_net,
     optimizer=optimizer,
     td_errors_loss_fn=common.element_wise_squared_loss,
+    target_q_network=q_net_target,
     train_step_counter=train_step_counter)
 
 # Create replay buffer
@@ -162,14 +170,17 @@ def train_agent(n_iterations):
         if iteration % LOG_INTERVAL == 0:
             log_metrics(train_metrics)
         if iteration % EVAL_INTERVAL == 0:
-           avg_returns.append(compute_avg_return(tf_env_eval, agent.policy, 5))
+           avg_returns.append(compute_avg_return(tf_env_eval, agent.policy, 1))
     return avg_returns
 
-
+print("Hi")
 agent.initialize()
+print("Hi")
 final_time_step, final_policy_state = init_driver.run()  # Collect some initial experiences
+print("Hi2")
 returns = train_agent(NUM_ITERATIONS)  # Run the training loop
 tf_policy_saver.save(policy_dir)
+print("Hi3")
 np.savetxt("returns/avg_returns.txt", returns)
 tf_env_train.close()
 tf_env_eval.close()
