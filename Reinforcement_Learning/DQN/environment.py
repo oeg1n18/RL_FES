@@ -12,9 +12,13 @@ from tensorflow import keras
 from tf_agents.environments import utils
 from tf_agents.environments import suite_gym
 import time
+import matplotlib.pyplot as plt
 
 TIME = False
 TEST = False
+TEST_ACTION = True
+ACTION = 9
+VALIDATE_ENV = True
 
 
 class hand_env(tf_agents.environments.py_environment.PyEnvironment, ABC):
@@ -33,7 +37,7 @@ class hand_env(tf_agents.environments.py_environment.PyEnvironment, ABC):
         self.reward = 0.0
         self.channel1 = 0.0
         self.channel2 = 1.0
-        self._state = np.array([2.5, 0.150, 0.10, 0.0, 1.0], dtype=np.float32)
+        self._state = np.array([2.5, 0.140, 0.10, 0.0, 1.0], dtype=np.float32)
         self.hand_model = keras.models.load_model("Models/model_cp.h5")
         self._episode_ended = False
         self.counter = 0
@@ -61,11 +65,9 @@ class hand_env(tf_agents.environments.py_environment.PyEnvironment, ABC):
         if self._episode_ended:
             # The last action ended the episode. Ignore the current action and start
             # a new episode.
+            self.counter = 0
             return self.reset()
         # Make sure episodes don't go on forever.
-        perms = list(itertools.permutations(np.arange(8.0), 2))
-        n_AC = len(perms)
-
         # take action
         if action == 0:
             chan1 += 1.0
@@ -91,22 +93,42 @@ class hand_env(tf_agents.environments.py_environment.PyEnvironment, ABC):
             raise ValueError('`action` should be integer between 0 and 9')
 
         inputs = np.zeros((1, 251, 7))
-        slope = np.arange(0, 1, 0.02 / self.stop_time)
+        slope = np.arange(0, 1, 0.02 / stop_time)
         initial = np.zeros(np.arange(0, 0.5, 0.02).shape)
         n_slope = initial.size + slope.size
+        if n_slope > 200:
+            len_flag = 1
+            slope = np.arange(0, 1, 0.02 / 3.5)
+            n_slope = initial.size + slope.size
+        else: 
+            len_flag = 0
         steady_state = np.ones(251 - n_slope)
         ramp = np.hstack((initial, slope, steady_state))
 
         if chan1 < 7 and chan1 >= 0:
-            inputs[0, :, int(chan1)] = ramp * self.amp1
+            inputs[0, :, int(chan1)] = ramp * amp1
         if chan2 < 7 and chan2 >= 0:
-            inputs[0, :, int(chan2)] = ramp * self.amp2
+            inputs[0, :, int(chan2)] = ramp * amp2
+        inputs = inputs[:, :251, :]
         angles = self.hand_model(inputs)
         angles = angles.numpy()
         error = np.sum(np.abs(angles[0, :, :] - self.target_trajectory[:, :]))
-       # print("error ", error, "  counter", self.counter, " ended ", self._episode_ended)
-        if self._episode_ended or error > 890 or stop_time < 0.04 or chan1 < 0 or chan2 < 0 or chan1 > 7 or chan2 > 7 or amp1 > 0.15 or amp2 > 0.15 or amp1 < 0 or amp2 < 0:
-            reward = np.float32((1 / error))
+        reward = np.float32((100.0 / error))
+        if self._episode_ended:
+            return ts.termination(self._state, reward)
+        if error > 895:
+            return ts.termination(self._state, reward)
+        if stop_time < 0.04:
+            return ts.termination(self._state, reward)
+        if int(chan1) < 0 or int(chan2) < 0:
+            return ts.termination(self._state, reward)
+        if  int(chan1) > 7 or int(chan2) > 7:
+            return ts.termination(self._state, reward)
+        if amp1 > 0.16 or amp2 > 0.16:
+            return ts.termination(self._state, reward)
+        if amp1 < 0 or amp2 < 0:
+            return ts.termination(self._state, reward)
+        if len_flag == 1:
             return ts.termination(self._state, reward)
         else:
             self._state = np.array([stop_time, amp1, amp2, chan1, chan2], dtype=np.float32)
@@ -130,13 +152,13 @@ if TIME:
 if TEST:
     environment = hand_env()
     tot_rewards = []
-    for episode in range(20):
+    for episode in range(2):
         time_step = environment.reset()
         cumulative_reward = time_step.reward
         step = 0
         while time_step.is_last() == False:
             print("episode: ", episode, " step: ", step)
-            action = np.random.randint(0, 9)
+            action = np.int32(9)
             action = np.array(action , dtype=np.int32)
             time_step = environment.step(action)
             cumulative_reward += time_step.reward
@@ -144,5 +166,19 @@ if TEST:
         tot_rewards.append(cumulative_reward)
     print(tot_rewards)
 
+if TEST_ACTION:
+    env = hand_env()
+    time_step = env.reset()
+    for i in range(30):
+        time_step = env.step(ACTION)
+        if time_step.is_last():
+            print(" ")
+            print(" EPISODE TERMINATED ")
+            print(" ")
+            time_step = env.reset()
+        
 
-
+if VALIDATE_ENV:
+    environment = hand_env()
+    utils.validate_py_environment(environment, episodes=5)
+    print(" =========== Environment Validated =========================")

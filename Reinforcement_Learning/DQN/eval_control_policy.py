@@ -17,6 +17,8 @@ from tf_agents.agents.dqn import dqn_agent
 from tf_agents.environments import tf_py_environment
 from tf_agents.metrics import tf_metrics
 from tf_agents.policies import policy_saver
+from tf_agents.environments import suite_gym
+
 
 from tf_agents.utils import common
 from tf_agents.replay_buffers import tf_uniform_replay_buffer
@@ -30,7 +32,11 @@ plt.xlabel("Episode (10^1)")
 plt.ylabel("Episode Reward")
 plt.show()
 
-env_eval = hand_env()
+#env_eval = hand_env()
+#tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
+
+env_name = 'CartPole-v0'
+env_eval = suite_gym.load(env_name)
 tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
 
 policy = tf.saved_model.load(policy_dir)
@@ -38,11 +44,13 @@ print(policy)
 
 obs = []
 step = 0
+time_step = tf_env_eval.reset()
+print(time_step)
 while step < 10:
     step += 1
     print("step: ", step)
-    action_step = policy.action(time_step)
-    time_step = tf_env_eval.step(action_step.action)
+    time_step = policy.action(time_step)
+    time_step = tf_env_eval.step(time_step.action)
     obs.append(time_step)
 
 print("The final input state variables are: ")

@@ -17,17 +17,19 @@ from tf_agents.policies import policy_saver
 from tf_agents.utils import common
 from tf_agents.replay_buffers import tf_uniform_replay_buffer
 from tf_agents.environments import suite_gym
+from tf_agents.environments import TimeLimit
+
 
 
 print("Is configuration built for gpu? : ", tf.config.list_physical_devices('GPU'))
 
-NUM_ITERATIONS = 1000  # @param {type:"integer"}
-INITIAL_COLLECT_STEPS = 2  # @param {type:"integer"}
-REPLAY_BUFFER_LENGTH = 10000  # @param {type:"integer"}
-BATCH_SIZE = 3  # @param {type:"integer"}
+NUM_ITERATIONS = 10000  # @param {type:"integer"}
+INITIAL_COLLECT_STEPS = 100  # @param {type:"integer"}
+REPLAY_BUFFER_LENGTH = 22000  # @param {type:"integer"}
+BATCH_SIZE = 64  # @param {type:"integer"}
 LEARNING_RATE = 1e-3  # @param {type:"number"}
-LOG_INTERVAL = 1  # @param {type:"integer"}
-EVAL_INTERVAL = 25  # @param {type:"integer"}
+LOG_INTERVAL = 500  # @param {type:"integer"}
+EVAL_INTERVAL = 100  # @param {type:"integer"}
 
 policy_dir = "policy"
 
@@ -39,6 +41,8 @@ policy_dir = "policy"
 #tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
 env_train = hand_env()
 env_eval = hand_env()
+tf_env_train = TimeLimit(env_train, 60)
+tf_env_eval = TimeLimit(env_eval, 60)
 tf_env_train = tf_py_environment.TFPyEnvironment(env_train)
 tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
 
@@ -159,17 +163,26 @@ def train_agent(n_iterations):
         train_loss = agent.train(trajectories)
         print("\r{} loss:{:.5f}".format(
             iteration, train_loss.loss.numpy()), end="")
-        if iteration % LOG_INTERVAL == 0:
-            log_metrics(train_metrics)
         if iteration % EVAL_INTERVAL == 0:
-           avg_returns.append(compute_avg_return(tf_env_eval, agent.policy, 5))
-    return avg_returns
+            av_reward = train_metrics[2].result().numpy()
+            print(" Average Rewards: ", av_reward)
+            avg_returns.append(av_reward)
+            np.savetxt("returns/avg_returns.txt", avg_returns)
+        
+    return 0
 
 
 agent.initialize()
+print(" ")
+print(" ======================== Initialized Agent ======================")
+print(" ")
 final_time_step, final_policy_state = init_driver.run()  # Collect some initial experiences
+print(" ")
+print(" ======================== Collected Initial Experiences ======================")
+print(" ")
+print(" ======================== Starting Training ======================")
+print(" ")
 returns = train_agent(NUM_ITERATIONS)  # Run the training loop
 tf_policy_saver.save(policy_dir)
-np.savetxt("returns/avg_returns.txt", returns)
 tf_env_train.close()
 tf_env_eval.close()

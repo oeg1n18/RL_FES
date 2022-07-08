@@ -32,15 +32,15 @@ EVAL_INTERVAL = 10  # @param {type:"integer"}
 policy_dir = "policy"
 
 # Transform the environment into a tensorflow environment
-#env_name = 'CartPole-v0'
-#env = suite_gym.load(env_name)
-#env_eval = suite_gym.load(env_name)
-#tf_env_train = tf_py_environment.TFPyEnvironment(env)
-#tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
-env_train = hand_env()
-env_eval = hand_env()
-tf_env_train = tf_py_environment.TFPyEnvironment(env_train)
+env_name = 'CartPole-v0'
+env = suite_gym.load(env_name)
+env_eval = suite_gym.load(env_name)
+tf_env_train = tf_py_environment.TFPyEnvironment(env)
 tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
+#env_train = hand_env()
+#env_eval = hand_env()
+#tf_env_train = tf_py_environment.TFPyEnvironment(env_train)
+#tf_env_eval = tf_py_environment.TFPyEnvironment(env_eval)
 
 # Build the Qnetwork for the DQN Agent
 q_net = q_network.QNetwork(

@@ -22,7 +22,7 @@ dict_value {
               name: "observation"
               shape {
                 dim {
-                  size: 5
+                  size: 4
                 }
               }
               dtype: DT_FLOAT
@@ -30,16 +30,19 @@ dict_value {
                 dtype: DT_FLOAT
                 tensor_shape {
                   dim {
-                    size: 5
+                    size: 4
                   }
                 }
-                tensor_content: "\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+                tensor_content: "\232\231\231\300\377\377\177\377Pw\326\276\377\377\177\377"
               }
               maximum {
                 dtype: DT_FLOAT
                 tensor_shape {
+                  dim {
+                    size: 4
+                  }
                 }
-                float_val: 3.4028235e+38
+                tensor_content: "\232\231\231@\377\377\177\177Pw\326>\377\377\177\177"
               }
             }
           }
@@ -62,7 +65,7 @@ dict_value {
                 dtype: DT_INT64
                 tensor_shape {
                 }
-                int64_val: 9
+                int64_val: 1
               }
             }
           }
